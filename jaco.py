@@ -6,36 +6,33 @@ Created on Wed Oct 21 08:40:43 2015
 """
 from __future__ import division
 import numpy as np
-from input import GG, BB, N, NG, NL, vm, an, e, f
 
-def JACO(GG,BB,P,Q,N,NG,NL,vm,an,e,f):
+def jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f):
+    """
+    Calculate the Jacobian
+    """
 
-    a = GG * e - BB * f
-    b = GG * f  + BB * e    
-#    a = np.array([[0,0,0],[0,0,-3.1836],[0,-5.7068, 0]])
-#    b = np.array([[0,0,0],[0,0,9.59],   [0,10.68,0]])    
+    # -- utilities
+    iden = np.eye(N)
+    inds = iden>0
+    a    = GG*e - BB*f
+    b    = GG*f + BB*e    
+    ep   = iden*e
+    fp   = iden*f
+    ep_a = np.dot(ep,a)
+    ep_b = np.dot(ep,b)
+    fp_a = np.dot(fp,a)
+    fp_b = np.dot(fp,b)
+
     # Forumate H, N, J and L matrices with standard sizes
-    di1 = np.diag_indices(N)
-    fp = np.eye(N)
-    ep = np.eye(N)
-    fp[di1]=f
-    ep[di1]=e
+    HH       =  fp_a - ep_b
+    NN       =  ep_a + fp_b
+    JJ       = -ep_a - fp_b
+    LL       =  fp_a - ep_b
+    HH[inds] = -Q - BB[inds]*vm**2
+    NN[inds] =  P + GG[inds]*vm**2
+    JJ[inds] =  P - GG[inds]*vm**2
+    LL[inds] =  Q - BB[inds]*vm**2
     
-    HH = np.dot(fp,a) - np.dot(ep,b)
-    NN = np.dot(ep,a) + np.dot(fp,b)
-    di = np.diag_indices(N)
-    HH[di] = -Q - BB[di]*vm**2
-    NN[di] = P + GG[di]*vm**2 # diagonal
-    
-    JJ = -np.dot(ep,a) - np.dot(fp,b)
-    LL = np.dot(fp,a) - np.dot(ep,b)
-    JJ[di] = P - GG[di]*vm**2 # diagonal
-    LL[di] = Q - BB[di]*vm**2 # diagonal
-  
-    H  = HH[1:N,1:N]
-    L  = LL[NG:N,NG:N] 
-    J  = JJ[NG:N,1:N]
-    NN = NN[NG-1:N,NG:N]
-    Jac = np.vstack((np.hstack((H,NN)),np.hstack((J,L))))
-    return Jac
-#Jac.flatten()#.reshape((N,N))
+    return np.vstack((np.hstack((HH[1:N,1:N],NN[NG-1:N,NG:N])),
+                      np.hstack((JJ[NG:N,1:N],LL[NG:N,NG:N] ))))
