@@ -15,35 +15,37 @@ Inputs: from input file:
 
 """
 import numpy as np
-import jaco as jaco
-from math import pi
 from power import power_uo
+from utilities import get_params
+from jaco import jaco
 
 # Be clear on initial conditions
-from input import GG, BB, N, NG, NL, vm, an, e, f, plspec, qlspec, pgspec, Q_d,P_d
+params = get_params()
+GG, BB, Q_d, P_d, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec = params
 
+# -- set tolerance params
 min_tol = 0.005
-n_ite  = 1
+n_ite   = 1
 ite_max = 1
-tol = 1
+tol     = 1
 
 #Compute powers and power mismatches
-P,Q,Delta_known = power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec)
+P, Q, Delta_known = power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec)
 
-Jac = jaco.JACO(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
+Jac = jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
 
 while (n_ite <= ite_max and tol > min_tol): 
     # Define jacobian
     Q = np.transpose(np.array([0, 1.5365, -0.9397])) # Q that makes the jacobian work
     P = np.transpose(np.array([0, 0,-2.9313]))
-    Jac = jaco.JACO(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
+    Jac = jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
     
     # Solve system of equations
     Delta_unknown = np.linalg.solve(Jac, Delta_known)
     
     # Update values of voltages and angles
     vm_p = Delta_unknown[NL+1:N+NL] #setup the subsets correctly
-    an_p = Delta_unknown[0:N-1]*180/pi #setup the subsets correctly
+    an_p = Delta_unknown[0:N-1]*180/np.pi #setup the subsets correctly
     
     # Calculate new estimates for the unknowns
     vm[NG:NG+NL] = vm[N-1]*(1 + vm_p)
