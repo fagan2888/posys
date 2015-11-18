@@ -4,35 +4,24 @@ Created on Tue Nov 10 09:58:16 2015
 
 @author: Sara
 """
-
 import numpy as np
 
 def power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec):
-    P = [0]*N
-    Q = [0]*N
-    for i in range(0, N):
-       s1 = 0.0
-       s2 = 0.0 
-       for j in range(0, N):
-           s1 = s1 + GG[i,j] * e[j] - BB[i,j] * f[j] 
-           s2 = s2 + GG[i,j] * f[j] + BB[i,j] * e[j] 
-       #print s1           
-       P[i] = e[i] * s1 + f[i] * s2 
-       Q[i] = f[i] * s1 - e[i] * s2
-    P = np.transpose(P)
-    Q = np.transpose(Q)
-   
-   # Calculate the deltas
-    pb = [0]*(NG+NL)
-    for i in range(0,NG-1):
-        pb[i] = pgspec[i] - P[i+1] 
-    for i in range(0,NL):
-        j = NG + i - 1
-        k = NL + j
-        print j
-        print k
-        pb[j] = plspec[i] - P[NG+i]
-        pb[k] = qlspec[i] - Q[NG+i]
-        pb = np.transpose(pb)
-    return P,Q,pb
+    """
+    Calculate the real and reactive power (P and Q) as well as Delta P and 
+    Delta Q
+    """
+
+    # -- calculate P and Q
+    a_sum = (GG*e - BB*f).sum(1)
+    b_sum = (GG*f + BB*e).sum(1)
+    P     = e*a_sum + f*b_sum
+    Q     = f*a_sum - e*b_sum
+    
+    # -- calculate the Deltas
+    pb = np.concatenate([pgspec[:NG-1] - P[1:NG],  
+                         plspec[:NL] - P[NG:NG+NL],
+                         qlspec[:NL] - Q[NG:NG+NL]])
+
+    return P, Q, pb
    
