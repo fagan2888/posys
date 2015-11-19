@@ -25,8 +25,8 @@ def get_params():
     N      = 3
     NG     = 2
     NL     = 1
-    vm     = np.array([0,1.1249,0.93834])
-    an     = np.array([0, 6.3, -3.44])
+    vm     = np.array([1.0,1.1249,0.93834])
+    an     = np.array([0.0, 6.3, -3.44])
     e      = vm*np.cos(an*np.pi/180.)
     f      = vm*np.sin(an*np.pi/180.)
     pgspec = np.array([1.7])
