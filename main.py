@@ -38,8 +38,8 @@ while (itr <= iter_max and tol > min_tol):
     dtv = np.linalg.solve(jac, dpq)
 
     # Update values of voltages and angles
-    vm[NG:NG+NL] = vm[NG:NG+NL]*(1 + dtv[NL+1:N+NL])
-    an[1:N]      = an[1:N] + dtv[0:N-1]*180/np.pi
+    vm[NG:NG+NL] *= 1 + dtv[NL+1:N+NL]
+    an[1:N]      += dtv[0:N-1]*180/np.pi
     
     # Update vectors e and f
     e = vm*np.cos(an*np.pi/180.)
