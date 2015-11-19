@@ -6,7 +6,7 @@ Created on Tue Nov 10 09:58:16 2015
 """
 import numpy as np
 
-def power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec):
+def power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec):
     """
     Calculate the real and reactive power (P and Q) as well as Delta P and 
     Delta Q
