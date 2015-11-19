@@ -7,7 +7,7 @@ Created on Wed Oct 21 08:40:43 2015
 from __future__ import division
 import numpy as np
 
-def jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f):
+def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f):
     """
     Calculate the Jacobian
     """
@@ -16,7 +16,7 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f):
     iden = np.eye(N)
     inds = iden>0
     a    = GG*e - BB*f
-    b    = GG*f + BB*e    
+    b    = GG*f + BB*e
     ep   = iden*e
     fp   = iden*f
     ep_a = np.dot(ep,a)
