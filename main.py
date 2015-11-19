@@ -24,44 +24,29 @@ params = get_params()
 GG, BB, Q_d, P_d, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec = params
 
 # -- set tolerance params
-min_tol = 0.005
-n_ite   = 1
-ite_max = 1
-tol     = 1
+min_tol  = 0.005
+itr      = 1
+iter_max = 5
+tol      = 1
 
-#Compute powers and power mismatches
-P, Q, Delta_known = power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec)
+while (itr <= iter_max and tol > min_tol): 
+    #Compute powers and power mismatches
+    P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec)
+    jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f)
 
-Jac = jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
-
-while (n_ite <= ite_max and tol > min_tol): 
-    # Define jacobian
-    Q = np.transpose(np.array([0, 1.5365, -0.9397])) # Q that makes the jacobian work
-    P = np.transpose(np.array([0, 0,-2.9313]))
-    Jac = jaco(GG,BB,P,Q,N,NG,NL,vm,an,e,f)
-    
     # Solve system of equations
-    Delta_unknown = np.linalg.solve(Jac, Delta_known)
-    
+    dtv = np.linalg.solve(jac, dpq)
+
     # Update values of voltages and angles
-    vm_p = Delta_unknown[NL+1:N+NL] #setup the subsets correctly
-    an_p = Delta_unknown[0:N-1]*180/np.pi #setup the subsets correctly
-    
-    # Calculate new estimates for the unknowns
-    vm[NG:NG+NL] = vm[N-1]*(1 + vm_p)
-    an[1:N] = an[1:N] + an_p
+    vm[NG:NG+NL] = vm[NG:NG+NL]*(1 + dtv[NL+1:N+NL])
+    an[1:N]      = an[1:N] + dtv[0:N-1]*180/np.pi
     
     # Update vectors e and f
-    e = np.transpose(vm*np.cos(np.radians(an)))
-    f = np.transpose(vm*np.sin(np.radians(an)))
-    
-    # Compute powers and power mismatches
-    P,Q,Delta_known = power_uo(GG,BB,N,NG,NL,vm,an,e,f,pgspec,plspec,qlspec)   
-    
+    e = vm*np.cos(an*np.pi/180.)
+    f = vm*np.sin(an*np.pi/180.)
+
     # Refresh
-    n_ite += 1
-    print vm
-    print an
-    #@er_vol = np.sum(np.abs(np.abs(vm) - np.abs(vm_p))/np.abs(vm_p))
-    #er_an = np.sum(np.abs(np.abs(an) - np.abs(an_p))/np.abs(an_p))
-    tol = 1#np.min([er_vol, er_an])
+    itr += 1
+
+    print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
+              .format(itr,an[1],vm[2],an[2]))
