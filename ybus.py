@@ -1,51 +1,44 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 16 20:24:20 2015
-
-@author: Sara
-"""
-
-# This function computes the Ybus Matrix necessary
-# for the Newton´s load flow programs
-# The imput comes from two matrices 'line' and 'bus'
-#
-#  The input matrix 'line' is organized in 7 columns:
-#
-#   (1)   (2)   (3)   (4)   (5)   (6)   (7)
-#    NS    NR    R     XL    BC    TR    TS
-#
-#  NS = Sending node  (iterger number)
-#  NR = Receiving node  (integer number)
-#  R  = Resistance
-#  XL = Series reactance
-#  BC = Shunt susceptance
-#  TR = Transformers tap ratio
-#  TS = Transformers phase shift
-#
-# The input matrix 'bus' is organized in 10 columns:
-#
-#   (1)   (2)   (3)   (4)   (5)   (6)   (7)   (8)   (9)   (10)
-#    Bn   Vol   Ang    Pg    Qg    Pl    Ql    Bg    Bb     Bt
-#
-#  Bn  = Bus number
-#  Vol = Voltage
-#  Ang = Angle
-#  Pg  = Active Power Generated
-#  Qg  = Reactive Power Generated
-#  Pl  = Active Power Consumed
-#  Ql  = Reactive Power Consumed
-#  Bg  = Bus conductance
-#  Bb  = Bus susceptance
-#  BT  = Bus type ( 1 = slack , 2 = generator , 3 = load )
-#
-# The ouptputs are two Matices GG and BB components YBUS
-# YBUS = GG + j BB
-
 import numpy as np
 
 def ybus(bus,line):
     """
     Return the GG and BB matrices from input bus and line info.
+
+    This function computes the Ybus Matrix necessary
+    for the Newton´s load flow programs
+    The imput comes from two matrices 'line' and 'bus'
+
+     The input matrix 'line' is organized in 7 columns:
+
+      (1)   (2)   (3)   (4)   (5)   (6)   (7)
+       NS    NR    R     XL    BC    TR    TS
+
+     NS = Sending node  (iterger number)
+     NR = Receiving node  (integer number)
+     R  = Resistance
+     XL = Series reactance
+     BC = Shunt susceptance
+     TR = Transformers tap ratio
+     TS = Transformers phase shift
+
+    The input matrix 'bus' is organized in 10 columns:
+
+      (1)   (2)   (3)   (4)   (5)   (6)   (7)   (8)   (9)   (10)
+       Bn   Vol   Ang    Pg    Qg    Pl    Ql    Bg    Bb     Bt
+
+     Bn  = Bus number
+     Vol = Voltage
+     Ang = Angle
+     Pg  = Active Power Generated
+     Qg  = Reactive Power Generated
+     Pl  = Active Power Consumed
+     Ql  = Reactive Power Consumed
+     Bg  = Bus conductance
+     Bb  = Bus susceptance
+     BT  = Bus type ( 1 = slack , 2 = generator , 3 = load )
+
+    The ouptputs are two Matices GG and BB components YBUS
+    YBUS = GG + j BB
     """
 
     # -- extract line info
