@@ -46,5 +46,6 @@ def get_network():
                         [12, 1.000	, 0.0, 0.0, 0.0, 	6.1,  1.6, 3],
                         [13, 1.000, 0.0, 0.0, 0.0, 13.5,  5.8, 3],
                         [14, 1.000, 0.0, 0.0, 0.0, 14.9,  5.0, 3]])
-    bus_nw = np.hstack((bus_nw,np.zeros((14,2))))
+    temp = np.hstack((bus_nw[:,0:6],np.zeros((14,2))))
+    bus_nw = np.hstack((temp,bus_nw[:,7].reshape(14,1)))
     return bus_nw, line_nw
