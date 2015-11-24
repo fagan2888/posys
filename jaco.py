@@ -2,7 +2,6 @@
 """
 Created on Wed Oct 21 08:40:43 2015
 
-@author: dr. Francisco de León, transcribed to Python by Sara Arango and dr. Gregory Dobler.
 """
 from __future__ import division
 import numpy as np
@@ -13,7 +12,7 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f):
     """
 
     # -- utilities
-    iden = np.eye(N)
+    iden = np.eye(len(f))
     inds = iden>0
     a    = GG*e - BB*f
     b    = GG*f + BB*e
