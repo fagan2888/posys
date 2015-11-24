@@ -61,11 +61,11 @@ def ybus(bus,line):
     Y = np.zeros([nbus,nbus],dtype=np.complex)
 
     # -- buid Y bus
-    for ii in range(nbus):
+    for ii in range(nline):
         tr[ii] = 1 if tr[ii]==0 else tr[ii]
         tps    = tr[ii]*np.exp(jimag*ts[ii]*np.pi/180)
-        send   = ns[ii]
-        rece   = nr[ii]
+        send   = ns[ii]-1
+        rece   = nr[ii]-1
         Y[send,rece] -= y[ii]/tps.conjugate()
         Y[rece,send] -= y[ii]/tps
         Y[send,send] += (y[ii]+jimag*bc[ii]/2.)/(tps*tps.conjugate())
