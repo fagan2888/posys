@@ -18,8 +18,14 @@ import numpy as np
 from power import power_uo
 from utilities import get_params
 from jaco import jaco
+from network import get_network
+from ybus import ybus
 
 # Be clear on initial conditions
+
+bus,line = get_network()
+BB, GG = ybus(bus,line)
+
 params = get_params()
 GG, BB, Q_d, P_d, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec = params
 

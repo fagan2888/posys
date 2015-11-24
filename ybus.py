@@ -5,7 +5,7 @@ def ybus(bus,line):
     Return the GG and BB matrices from input bus and line info.
 
     This function computes the Ybus Matrix necessary
-    for the Newton´s load flow programs
+    for the Newtons load flow programs
     The imput comes from two matrices 'line' and 'bus'
 
      The input matrix 'line' is organized in 7 columns:
@@ -40,6 +40,9 @@ def ybus(bus,line):
     The ouptputs are two Matices GG and BB components YBUS
     YBUS = GG + j BB
     """
+    from network import get_network
+    
+    bus,line = get_network()
 
     # -- extract line info
     ns, nr, r, xl, bc, tr, ts = (line.T)[:7]
@@ -58,7 +61,7 @@ def ybus(bus,line):
     Y = np.zeros([nbus,nbus],dtype=np.complex)
 
     # -- buid Y bus
-    for ii in range(nline):
+    for ii in range(nbus):
         tr[ii] = 1 if tr[ii]==0 else tr[ii]
         tps    = tr[ii]*np.exp(jimag*ts[ii]*np.pi/180)
         send   = ns[ii]
