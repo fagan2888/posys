@@ -37,15 +37,15 @@ def get_params(setting):
     elif setting == '14 bus':
             bus,line = get_network()
             BB, GG = ybus(bus,line)            
-            NG = sum(bus[:,8]==2)
-            NL = sum(bus[:,8]==3)
-            pgspec = bus[bus[:,8]==2,3]
-            plspec = bus[bus[:,8]==3,5]
-            qlspec = bus[bus[:,8]==3,6]
+            NG = sum(bus[:,9]!=3)
+            NL = sum(bus[:,9]==3)
+            pgspec = bus[bus[:,9]==2,3]
+            plspec = bus[bus[:,9]==3,5]
+            qlspec = bus[bus[:,9]==3,6]
             # vgspec
             N = NG - 1 + 2*NL
-            vm = bus[bus[:,8]!=3,1]
-            an = bus[bus[:,8]!=3,2]
+            vm = bus[:,1]
+            an = bus[:,2]
             e  = vm*np.cos(an*np.pi/180.)
             f  = vm*np.sin(an*np.pi/180.)
 
