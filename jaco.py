@@ -33,5 +33,5 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f):
     JJ[inds] =  P - GG[inds]*vm**2
     LL[inds] =  Q - BB[inds]*vm**2
     
-    return np.vstack((np.hstack((HH[1:N-1,1:N-1],NN[1:N-1,NG:N])),
-                      np.hstack((JJ[NG:N,1:N-1], LL[NG:N,NG:N] ))))
+    return np.vstack((np.hstack((HH[1:NG+NL,1:NG+NL],NN[1:NG+NL,NG:N])),
+                      np.hstack((JJ[NG:N,1:NG+NL], LL[NG:N,NG:N] ))))
