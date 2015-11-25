@@ -22,6 +22,8 @@ def power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec):
     pb = np.concatenate([pgspec[:NG-1] - P[1:NG],  
                          plspec[:NL] - P[NG:NG+NL],
                          qlspec[:NL] - Q[NG:NG+NL]])
+                         
+    #np.vstack((np.hstack((HH[1:2*NG-1,1:2*NG-1],NN[1:2*NG-1,NG:N])),np.hstack((JJ[NG:N,1:2*NG-1], LL[NG:N,NG:N] ))))
 
     return P, Q, pb
    
