@@ -27,7 +27,7 @@ GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec = params
 # -- set tolerance params
 min_tol  = 0.005
 itr      = 1
-iter_max = 5
+iter_max = 2
 tol      = 1
 
 while (itr <= iter_max and tol > min_tol): 
@@ -39,8 +39,8 @@ while (itr <= iter_max and tol > min_tol):
     dtv = np.linalg.solve(jac, dpq)
 
     # Update values of voltages and angles
-    vm[NG:NG+NL] *= 1 + dtv[NL+1:N+NL]
-    an[1:N]      += dtv[0:N-1]*180/np.pi
+    vm[NG:NG+NL] *= 1 + dtv[NL+1:N+NL] # load bus
+    an[1:N]      += dtv[0:NL+NG-1]*180/np.pi # loads and generators
     
     # Update vectors e and f
     e = vm*np.cos(an*np.pi/180.)
@@ -48,6 +48,8 @@ while (itr <= iter_max and tol > min_tol):
 
     # Refresh
     itr += 1
+    
+    print an
 
-    print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
-              .format(itr,an[1],vm[2],an[2]))
+#    print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
+#              .format(itr,an[1],vm[2],an[2]))
