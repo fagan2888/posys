@@ -6,7 +6,7 @@ Created on Wed Oct 21 08:40:43 2015
 from __future__ import division
 import numpy as np
 
-def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f):
+def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load):
     """
     Calculate the Jacobian
     """
@@ -33,5 +33,5 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f):
     JJ[inds] =  P - GG[inds]*vm**2
     LL[inds] =  Q - BB[inds]*vm**2
     
-    return np.vstack((np.hstack((HH[1:NG+NL,1:NG+NL],NN[1:NG+NL,NG:N])),
-                      np.hstack((JJ[NG:N,1:NG+NL], LL[NG:N,NG:N] ))))
+    return np.vstack((np.hstack((HH[1:NG+NL,1:NG+NL],NN[1:NG+NL,ind_load])),
+                      np.hstack((JJ[ind_load,1:NG+NL], LL[ind_load][:,ind_load] ))))
