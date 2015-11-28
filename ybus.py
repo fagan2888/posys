@@ -66,10 +66,14 @@ def ybus(bus,line):
         tps    = tr[ii]*np.exp(jimag*ts[ii]*np.pi/180)
         send   = ns[ii]-1
         rece   = nr[ii]-1
-        Y[send,rece] -= y[ii]/tps.conjugate()
-        Y[rece,send] -= y[ii]/tps
-        Y[send,send] += (y[ii]+jimag*bc[ii]/2.)/(tps*tps.conjugate())
-        Y[rece,rece] += y[ii]+jimag*bc[ii]/2.
+        Y[send,rece] -= y[ii]/tps.conjugate() # Francisco
+        Y[rece,send] -= y[ii]/tps # Francisco
+        #Y[send,rece] -= y[ii]/tps;
+        #Y[rece,send] = Y[send,rece]
+        Y[send,send] += (y[ii]+jimag*bc[ii]/2.)/(tps*tps.conjugate()) # Francisco
+        #Y[send,send] += y[ii]/(tps**2) + bc[ii];
+        Y[rece,rece] += y[ii]+jimag*bc[ii]/2. # Francisco
+        #Y[send,send] += + y[ii] + bc[ii];
 
     # -- include the bus to ground conductance and susceptance
     # -- bus[:,7] - bus conductance
