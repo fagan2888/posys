@@ -40,9 +40,6 @@ def ybus(bus,line):
     The ouptputs are two Matices GG and BB components YBUS
     YBUS = GG + j BB
     """
-    from network import get_network
-    
-    bus,line = get_network()
 
     # -- extract line info
     ns, nr, r, xl, bc, tr, ts = (line.T)[:7]

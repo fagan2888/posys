@@ -56,6 +56,7 @@ def get_params(setting):
             f         = vm*np.sin(an*np.pi/180.)
  
 
-    return [GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load]
+    return [GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, 
+            ind_load]
     # GGD: what do these variables stand for?
     # GGD: also change the names to something more readable
