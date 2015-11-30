@@ -21,10 +21,8 @@ def power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,ind_load):
     
     # -- calculate the Deltas
     dtv   = np.concatenate([pgspec[:NG-1] - P[ind_gen],  
-                         plspec[:NL] - P[ind_load],
-                         qlspec[:NL] - Q[ind_load]])
+                            plspec[:NL] - P[ind_load],
+                            qlspec[:NL] - Q[ind_load]])
                          
-    #np.vstack((np.hstack((HH[1:2*NG-1,1:2*NG-1],NN[1:2*NG-1,NG:N])),np.hstack((JJ[NG:N,1:2*NG-1], LL[NG:N,NG:N] ))))
-
     return P, Q, dtv
    
