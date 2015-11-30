@@ -14,10 +14,13 @@ Inputs: from input file:
 - pgspec, plspec and qlspec 
 
 """
-import numpy as np
-from power import power_uo
-from utilities import get_params
-from jaco import jaco
+#import numpy as np
+#from power import power_uo
+#from utilities import get_params
+#from jaco import jaco
+execfile('power.py')
+execfile('utilities.py')
+execfile('jaco.py')
 
 # Be clear on initial conditions
 setting = '14 bus'
@@ -30,9 +33,14 @@ itr      = 1
 iter_max = 2
 tol      = 1
 
+P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
+                     ind_load)
+
+"""
 while (itr <= iter_max and tol > min_tol): 
     # Compute powers and power mismatches
-    P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,ind_load)
+    P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
+                         ind_load)
     jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
 
     # Solve system of equations
@@ -52,3 +60,4 @@ while (itr <= iter_max and tol > min_tol):
     print vm
     #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
     #          .format(itr,an[1],vm[2],an[2]))
+"""
