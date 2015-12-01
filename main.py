@@ -29,14 +29,14 @@ GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = par
 
 # -- set tolerance params
 min_tol  = 0.005
-itr      = 1
-iter_max = 2
+itr      = 0
+iter_max = 10
 tol      = 1
 
-P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
-                     ind_load)
+#P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
+#                     ind_load)
 
-"""
+
 while (itr <= iter_max and tol > min_tol): 
     # Compute powers and power mismatches
     P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
@@ -44,7 +44,9 @@ while (itr <= iter_max and tol > min_tol):
     jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
 
     # Solve system of equations
-    dtv = np.linalg.solve(jac, dpq)
+#    dtv = np.linalg.solve(jac, dpq)
+    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
+
 
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG:NG+NL] # load bus
@@ -60,4 +62,4 @@ while (itr <= iter_max and tol > min_tol):
     print vm
     #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
     #          .format(itr,an[1],vm[2],an[2]))
-"""
+

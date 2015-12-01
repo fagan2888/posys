@@ -20,9 +20,9 @@ def power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,ind_load):
     Q     = f*a_sum - e*b_sum
     
     # -- calculate the Deltas
-    dtv   = np.concatenate([pgspec[:NG-1] - P[ind_gen],  
+    dpq   = np.concatenate([pgspec[:NG-1] - P[ind_gen],  
                             plspec[:NL] - P[ind_load],
                             qlspec[:NL] - Q[ind_load]])
                          
-    return P, Q, dtv
+    return P, Q, dpq
    
