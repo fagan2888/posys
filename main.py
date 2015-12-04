@@ -18,6 +18,7 @@ Inputs: from input file:
 #from power import power_uo
 #from utilities import get_params
 #from jaco import jaco
+from matplotlib import pyplot
 execfile('power.py')
 execfile('utilities.py')
 execfile('jaco.py')
@@ -30,24 +31,26 @@ GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = par
 # -- set tolerance params
 min_tol  = 0.005
 itr      = 0
-iter_max = 10
+iter_max = 100
 tol      = 1
+delta_magnitude = [0]*(iter_max+1)
+dpq_magnitude = [0]*(iter_max+1)
 
-#P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
-#                     ind_load)
-
+P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,ind_load)
+jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
 
 while (itr <= iter_max and tol > min_tol): 
     # Compute powers and power mismatches
     P, Q, dpq = power_uo(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
                          ind_load)
-    jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
-
+    #jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
+                        
     # Solve system of equations
-#    dtv = np.linalg.solve(jac, dpq)
-    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
+    dtv = np.linalg.solve(jac, dpq)
+    #dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
 
-
+    delta_magnitude[itr] = np.linalg.norm(dtv,1)
+    dpq_magnitude[itr]   = np.linalg.norm(dpq,1)
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG:NG+NL] # load bus
     an[1:N]      += dtv[0:NL+NG-1]*180/np.pi # loads and generators
@@ -55,11 +58,14 @@ while (itr <= iter_max and tol > min_tol):
     # Update vectors e and f
     e = vm*np.cos(an*np.pi/180.)
     f = vm*np.sin(an*np.pi/180.)
-
+    
     # Refresh
     itr += 1
     
-    print vm
-    #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
-    #          .format(itr,an[1],vm[2],an[2]))
+    print itr
+    print e
+    print f
+    #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}".format(itr,an[1].round(6),vm[2],an[2]))
 
+pyplot.plot(dpq_magnitude)
+pyplot.plot(delta_magnitude)
