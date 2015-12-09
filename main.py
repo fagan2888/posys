@@ -45,13 +45,17 @@ while (itr <= iter_max and tol > min_tol):
 
     # Solve system of equations
 #    dtv = np.linalg.solve(jac, dpq)
-    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
+    dtv = np.linalg.lstsq(jac, dpq)[0]
+#    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
 
 
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG:NG+NL] # load bus
     an[1:N]      += dtv[0:NL+NG-1]*180/np.pi # loads and generators
     
+    vm[ind_load] = np.abs(vm[ind_load])
+    an[1:N]      = an[1:N] % 360.
+
     # Update vectors e and f
     e = vm*np.cos(an*np.pi/180.)
     f = vm*np.sin(an*np.pi/180.)
@@ -59,7 +63,7 @@ while (itr <= iter_max and tol > min_tol):
     # Refresh
     itr += 1
     
-    print vm
+    print np.max(np.abs(dpq))
     #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}" \
     #          .format(itr,an[1],vm[2],an[2]))
 
