@@ -24,7 +24,7 @@ execfile('utilities.py')
 execfile('jaco.py')
 
 # Be clear on initial conditions
-setting = '14 bus'
+setting = '3 bus'
 params = get_params(setting)
 GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = params
 
@@ -62,9 +62,7 @@ while (itr <= iter_max and tol > min_tol):
     # Refresh
     itr += 1
     
-    print itr
-    print e
-    print f
+    print an
     #print("iter, theta_2, voltage_3, theta_3 = {0}, {1}, {2}, {3}".format(itr,an[1].round(6),vm[2],an[2]))
 
 pyplot.plot(dpq_magnitude)
