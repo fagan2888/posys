@@ -26,9 +26,9 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load):
     # Forumate H, N, J and L matrices with standard sizes
     HH       =  fp_a - ep_b
     NN       =  ep_a + fp_b
-    JJ       = -ep_a - fp_b
+    JJ       =  - ep_a - fp_b
     LL       =  fp_a - ep_b
-    HH[inds] = -Q - BB[inds]*vm**2
+    HH[inds] = -Q - BB[inds]*vm**2 ## CAREFUL
     NN[inds] =  P + GG[inds]*vm**2
     JJ[inds] =  P - GG[inds]*vm**2
     LL[inds] =  Q - BB[inds]*vm**2

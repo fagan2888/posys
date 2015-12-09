@@ -26,15 +26,20 @@ def get_params(setting):
             NG     = 2
             NL     = 1
             N      = NG - 1 + 2*NL
-            vm     = np.array([1.0,1.1249,0.93834])
+            #vm     = np.array([1.0,1.1249,0.93834])
+            vm     = np.array([1.0, 1.0, 1.0])
             #vm     = np.array([1.0,1.1249,1.0])
-            an     = np.array([0.0, 6.3, -3.44])
+            #an     = np.array([0.0, 6.3, -3.44])
+            an     = np.array([0.0,0.0,0.0])  
             #an     = np.array([0.0, 0.0, 0.0])
             e      = vm*np.cos(an*np.pi/180.)
             f      = vm*np.sin(an*np.pi/180.)
-            pgspec = np.array([1.7])
-            plspec = np.array([-2])
-            qlspec = np.array([-1])
+#            pgspec = np.array([1.7])
+#            plspec = np.array([-2])
+#            qlspec = np.array([-1])
+            pgspec = np.array([0.0])
+            plspec = np.array([0.0])
+            qlspec = np.array([0.0])
             ind_gen = np.array([ False, True, False])
             ind_load = np.array([False, False, True])
             
