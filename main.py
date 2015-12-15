@@ -24,7 +24,7 @@ execfile('utilities.py')
 execfile('jaco.py')
 
 # Be clear on initial conditions
-setting = '3 bus'
+setting = '14 bus'
 params = get_params(setting)
 GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = params
 
@@ -46,7 +46,7 @@ while (itr <= iter_max and tol > min_tol):
     #jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
                         
     # Solve system of equations
-    dtv = np.linalg.solve(jac, dpq)
+    dtv = np.linalg.solve(jac,dpq)
 #    dtv = np.linalg.lstsq(jac, dpq)[0]
 #    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
 
@@ -54,7 +54,7 @@ while (itr <= iter_max and tol > min_tol):
     dpq_magnitude[itr]   = np.linalg.norm(dpq,1)
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG:NG+NL] # load bus
-    an[1:N]      += dtv[0:NL+NG-1]*180/np.pi # loads and generators
+    an[1:N]      = dtv[0:NL+NG-1]*180/np.pi # loads and generators
     
     vm[ind_load] = np.abs(vm[ind_load])
     an[1:N]      = an[1:N] % 360.
