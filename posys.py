@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
+from pdb import set_trace as stop
 
 def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load):
     """
@@ -195,25 +196,18 @@ def get_params(systype):
         BB       = np.array([[-5,   0,   5],
                              [ 0, -10,  10],
                              [ 5,  10, -15]])
-#        Q_d = np.array([0, 0, -0.9397])
-#        P_d = np.array([0, 2.6860,-2.9313])
+#        GG += 1e-15*np.random.randn(*GG.shape)
+#        BB += 1e-15*np.random.randn(*GG.shape)
         NG       = 2
         NL       = 1
         N        = NG - 1 + 2*NL
-#        vm = np.array([1.0,1.1249,0.93834])
-        vm       = np.array([1.0, 1.0, 1.0])
-#        vm = np.array([1.0,1.1249,1.0])
-#        an = np.array([0.0, 6.3, -3.44])
-        an       = np.array([0.0,0.0,0.0])
-#        an = np.array([0.0, 0.0, 0.0])
+        vm       = np.array([1.0, 1.1249, 0.93834])
+        an       = np.array([0.0,6.3,-3.44])
         e        = vm*np.cos(an*np.pi/180.)
         f        = vm*np.sin(an*np.pi/180.)
-#        pgspec   = np.array([1.7])
-#        plspec   = np.array([-2])
-#        qlspec   = np.array([-1])
-        pgspec   = np.array([0.0])
-        plspec   = np.array([0.0])
-        qlspec   = np.array([0.0])
+        pgspec   = np.array([1.7])
+        plspec   = np.array([-2])
+        qlspec   = np.array([-1])
         ind_gen  = np.array([ False, True, False])
         ind_load = np.array([False, False, True])
     elif systype == '14bus':
@@ -243,7 +237,7 @@ def get_params(systype):
 #####################
 
 # -- set the system type and get the parameters
-systype = '14bus'
+systype = '3bus'
 params  = get_params(systype)
 GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = \
     params
@@ -263,8 +257,8 @@ while (itr <= iter_max and tol > min_tol):
     jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
 
     # Solve system of equations
-#    dtv = -np.linalg.solve(jac, dpq)
-    dtv = np.linalg.lstsq(jac, dpq)[0]
+    dtv = np.linalg.solve(jac, dpq)
+#    dtv = np.linalg.lstsq(jac, dpq)[0]
 #    dtv = np.dot(np.linalg.pinv(np.dot(jac,jac.T)),np.dot(dpq,jac.T))
 
     # Track delta magnitude changes
@@ -274,8 +268,8 @@ while (itr <= iter_max and tol > min_tol):
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG:NG+NL] # load bus
     an[1:N]      += dtv[0:NL+NG-1]*180/np.pi # loads and generators
-    vm[ind_load]  = np.abs(vm[ind_load])
-    an[1:N]       = an[1:N] % 360.
+#    vm[ind_load]  = np.abs(vm[ind_load])
+#    an[1:N]       = an[1:N] % 360.
 
     # Update vectors e and f
     e = vm*np.cos(an*np.pi/180.)
@@ -284,7 +278,13 @@ while (itr <= iter_max and tol > min_tol):
     # Refresh
     itr += 1
 
-    print(vm.round(2))
-
-#    print np.max(np.abs(dpq))
-#    print(vm)
+    print("\niteration: {0}".format(itr))
+    print("  power : {0}".format(P))
+    print("  reac  : {0}".format(Q))
+    print("  dpq   : {0}".format(dpq))
+    print("  jac   : {0}".format(jac[0]))
+    print("        : {0}".format(jac[1]))
+    print("        : {0}".format(jac[2]))
+    print("  dtv   : {0}".format(dtv))
+    print("  vm    : {0}".format(vm))
+    print("  an    : {0}".format(an))
