@@ -11,6 +11,8 @@ import case14_mod
 from numpy import zeros, hstack
 import pandas as pd
 from pylab import imshow
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 #import matplotlib as matplot
 
 dlt_vec = [0.05, -0.05, 0.10, -0.10, 0.50, -0.50]
@@ -28,11 +30,22 @@ for j in range(0,len(dlt_vec)):
         
 
 for j in range(0,len(dlt_vec)):
-    print "Matrix", format(100*dlt_vec[j]), ' %'
-    print ' ' 
-    imshow(mtr[:,:8,j])
-    imshow(mtr[:,8:,j])
-    print pd.DataFrame(mtr[:,:,j])
+    
+    fig = plt.figure()
+    a=fig.add_subplot(1,1,1)
+    imgplot = plt.imshow(mtr[:,:8,j])
+    a.set_title('Voltages')
+    vname = 'Voltages' + str(dlt_vec[j]) + '.png'
+    plt.colorbar(orientation ='horizontal')
+    plt.savefig(vname, dpi=100)
+    
+    fig = plt.figure()
+    a=fig.add_subplot(1,1,1)
+    imgplot = plt.imshow(mtr[:,9:,j])
+    a.set_title('Angles')
+    aname = 'Angles' + str(dlt_vec[j]) + '.png'
+    plt.colorbar(orientation ='horizontal')
+    plt.savefig(aname, dpi=100)
 
 # 
 #pypo.printpf(r)
