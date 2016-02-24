@@ -8,12 +8,9 @@ obtained angles and voltages.
 
 import pypower.api as pypo # to install, just pip install PYPOWER
 import case14_mod
-from numpy import zeros, hstack, ones, transpose
-import numpy as np
-import pandas as pd
-from pylab import imshow
+from numpy import zeros, hstack, transpose
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+
 #import matplotlib as matplot
 
 dlt_vec   = [0.05, -0.05, 0.10, -0.10, 0.50, -0.50]
