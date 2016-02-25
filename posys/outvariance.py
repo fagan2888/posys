@@ -40,7 +40,8 @@ for j in range(0,len(dlt_vec)):
     
     fig     = plt.figure()
     a       = fig.add_subplot(1,1,1)
-    imgplot = plt.imshow(100*(mtr[:,:8,j]-v0) / v0)
+    imgplot = plt.imshow(100*(mtr[:,:8,j]-v0) / v0,interpolation="nearest",
+                         cmap="seismic")
     a.set_title('Voltages')
     vname   = 'Voltages' + str(dlt_vec[j]) + '.png'
     plt.colorbar(orientation ='horizontal')
