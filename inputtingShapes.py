@@ -10,7 +10,7 @@ import pandas as pd
 import pypower.api as pypo 
 
 load_shapes = pd.read_csv('loadShapes1.csv')
-sample      = load_shapes.iloc[0][load_shapes.columns[9:]]
+sample      = 10*load_shapes.iloc[0][load_shapes.columns[9:]]
 
 ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0) # trivial case: original solutin
 ppopt0    = pypo.ppoption(PF_ALG=2) # Careful: have to use Newton Method!!!
@@ -22,5 +22,8 @@ for i in range(0,14):
     for ld in sample:
         dw  = ld / ini_load - 1    
         ppc = case14_mod.case14_mod(busN = i,dlt = dw)
+        ppopt     = pypo.ppoption(PF_ALG=2) # Careful: have to use Newton Method!!!
+        r         = pypo.runpf(ppc0, ppopt0)
+        new_loads = r[0]['bus'][:,2]
         
         
