@@ -47,9 +47,7 @@ for j in range(0,len(dlt_vec)):
             mtr[tmp,:,j] = pwr
             del(ppc, ppopt, r, pwr)
             tmp += 1
-            
-        
-
+              
 ## -- plot results
 figs = []
 axs = []
@@ -66,8 +64,4 @@ for j in range(0,len(dlt_vec)):
     figs[j].colorbar(ims[j],orientation ='horizontal')
     axs[j].set_xlabel('Number of transfomers - generators')
     axs[j].set_ylabel('Load that changed (buildings)')
-    figs[j].savefig(os.path.join("../output",vname), dpi=100, clobber=True)
-    
-            
-
-  
+    figs[j].savefig(os.path.join("../output",vname), dpi=100, clobber=True)   
