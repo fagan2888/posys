@@ -30,52 +30,51 @@ ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0) # trivial case: original sol
 #                          OUT_V_LIM    = False) # Careful: have to use Newton Method!!!
 ppopt0    = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
 r0        = pypo.runpf(ppc0, ppopt0)       
-m1        = r0[0]['bus'][r0[0]['bus'][:,1] == 1,7]
-v0        = [m1 for i in range(0,8)] 
-v0        = transpose(v0)
-m2        = r0[0]['bus'][r0[0]['bus'][:,1] != 3,8] 
-a0        = [m2 for i in range(0,9)] 
+m1        = r0[0]['bus'][r0[0]['bus'][:,1] == 2,2]
+
+# CORRECT THIS!!!
+p0        = [m1 for i in range(0,4)] 
+p0        = transpose(p0)
 #a0        = transpose(a0)
-mtr       = zeros([9,22,len(dlt_vec)]) 
+mtr       = zeros([8,4,len(dlt_vec)]) 
 
 j = 1
 for j in range(0,len(dlt_vec)):
-    for i in range(0,9):
-        ppc        = case14_mod.case14_mod(busN = i,dlt = dlt_vec[j])
-        ppopt      = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
-        r          = pypo.runpf(ppc, ppopt)
-        volt       = r[0]['bus'][r[0]['bus'][:,1] == 1,7]  # voltage 7, type 2 
-        ang        = r[0]['bus'][r[0]['bus'][:,1] != 3,8]  # angle 8, type 2
-        mtr[i,:,j] = hstack((volt,ang))
+    tmp = 0
+    for i in range(0,13):        
+        if r0[0]['bus'][i,1] == 1:
+            # Change this: buses have to be transformers
+            ppc          = case14_mod.case14_mod(busN = i,dlt = dlt_vec[j])
+            ppopt        = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
+            r            = pypo.runpf(ppc, ppopt)
+            #plt.plot(r[0]['bus'][:,2])
+            pwr          = r[0]['bus'][r[0]['bus'][:,1] == 2,2]  # voltage 7, type 2 
+            print r[0]['bus'][r[0]['bus'][:,1] == 1,2]
+            mtr[tmp,:,j] = pwr
+            del(ppc, ppopt, r, pwr)
+            tmp += 1
+            
         
 
-# -- plot results
-figs = []
-axs = []
-ims = []
+## -- plot results
+#figs = []
+#axs = []
+#ims = []
+#
+#for j in range(0,len(dlt_vec)):
+#    figs.append(plt.figure(figsize=(10,15)))
+#    axs.append(figs[j].add_subplot(1,1,1))
+#    # CORRECT THIS!
+#    ims.append(axs[j].imshow(100*(mtr[:,:,j]-p0) / p0,
+#                              interpolation="nearest",
+#                               cmap="seismic"))
+#    axs[j].set_title('Powers (Power change: {0})'.format(dlt_vec[j]))
+#    vname   = 'Power' + str(dlt_vec[j]) + '.png'
+#    figs[j].colorbar(ims[j],orientation ='horizontal')
+#    axs[j].set_xlabel('Number of transfomers - generators')
+#    axs[j].set_ylabel('Load that changed (buildings)')
+#    figs[j].savefig(os.path.join("../output",vname), dpi=100, clobber=True)
+#    
+            
 
-for j in range(0,len(dlt_vec)):
-
-    figs.append(plt.figure())
-    axs.append(figs[2*j].add_subplot(1,1,1))
-    ims.append(axs[2*j].imshow(100*(mtr[:,:8,j]-v0) / v0,
-                              interpolation="nearest",
-                               cmap="seismic"))
-    axs[2*j].set_title('Voltages (Power change: {0})'.format(dlt_vec[j]))
-    vname   = 'Voltages' + str(dlt_vec[j]) + '.png'
-    figs[2*j].colorbar(ims[2*j],orientation ='horizontal')
-    axs[2*j].set_xlabel('Number of loads')
-    axs[2*j].set_ylabel('Load that changed')
-    figs[2*j].savefig(os.path.join("../output",vname), dpi=100, clobber=True)
-    
-    figs.append(plt.figure())
-    axs.append(figs[2*j+1].add_subplot(1,1,1))
-    ims.append(axs[2*j+1].imshow(100*(mtr[:,9:,j]-a0) / a0,
-                              interpolation="nearest",
-                               cmap="seismic"))
-    axs[2*j+1].set_title('Angles (Power change: {0})'.format(dlt_vec[j]))
-    aname   = 'Angles' + str(dlt_vec[j]) + '.png'
-    figs[2*j+1].colorbar(ims[2*j+1],orientation ='horizontal')
-    axs[2*j+1].set_xlabel('Number of buses')
-    axs[2*j+1].set_ylabel('Load that changed')
-    figs[2*j+1].savefig(os.path.join("../output",aname), dpi=100, clobber=True)
+  
