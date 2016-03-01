@@ -31,11 +31,7 @@ ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0) # trivial case: original sol
 ppopt0    = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
 r0        = pypo.runpf(ppc0, ppopt0)       
 m1        = r0[0]['gen'][:,1]
-
-# CORRECT THIS!!!
 p0        = [m1 for i in range(0,8)] 
-#p0        = transpose(p0)
-#a0        = transpose(a0)
 mtr       = zeros([8,5,len(dlt_vec)]) 
 
 j = 1
@@ -43,7 +39,6 @@ for j in range(0,len(dlt_vec)):
     tmp = 0
     for i in range(0,13):        
         if r0[0]['bus'][i,1] == 1:
-            # Change this: buses have to be transformers
             ppc          = case14_mod.case14_mod(busN = i,dlt = dlt_vec[j])
             ppopt        = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
             r            = pypo.runpf(ppc, ppopt)
@@ -63,7 +58,6 @@ ims = []
 for j in range(0,len(dlt_vec)):
     figs.append(plt.figure(figsize=(10,15)))
     axs.append(figs[j].add_subplot(1,1,1))
-    # CORRECT THIS!
     ims.append(axs[j].imshow(100*(mtr[:,:,j]-p0) / p0,
                               interpolation="nearest",
                                cmap="seismic"))
