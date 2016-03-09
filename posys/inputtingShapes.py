@@ -23,18 +23,17 @@ bdgs      = r0[0]['bus'][:,0][r0[0]['bus'][:,1]==1]
 tm_max    = len(sample)
   # bus 8, power after solution
 
-
 TS  = np.empty((n_bldgs,n_trs,tm_max))
-initial_loads_vec = r0[0]['gen'][:,2][1:]
+initial_loads_vec = r0[0]['bus'][:,2]
 cont = 0
 for i in bdgs:
     tmp = 0
-    for j in transfs:
-        ini_load = initial_loads_vec[tmp]
+    ini_load = initial_loads_vec[i-1]
+    for j in transfs:   
         for ld in sample:
             # NEED TO NORMALIZE CORRECTLY
             dw           = ini_load/ld - 1  
-            ppc          = case14_mod.case14_mod(busN = i-1, dlt = dw, op_change=2)
+            ppc          = case14_mod.case14_mod(busN = i-1, dlt = dw, op_change=1)
             ppopt        = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) 
             r            = pypo.runpf(ppc, ppopt)
             new_loads    = r[0]['gen'][:,2][1:]
@@ -42,8 +41,4 @@ for i in bdgs:
             TS[cont,tmp] = new_loads[tmp]
             del(r)
         tmp += 1
-    cont += 1
-    #print("Hello World")
-                
-        
-        
+    cont += 1            
