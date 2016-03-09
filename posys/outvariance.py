@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 #import matplotlib as matplot
 
 dlt_vec   = [0.05, -0.05, 0.10, -0.10, 0.50, -0.50]
-ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0) # trivial case: original solutin
+ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0, op_change=1) # trivial case: original solutin
 #ppopt0    = pypo.ppoption(PF_ALG=2, VERBOSE=0,
 #                          OUT_ALL      = False,
 #                          OUT_ALL_LIM  = False,
@@ -39,7 +39,7 @@ for j in range(0,len(dlt_vec)):
     tmp = 0
     for i in range(0,13):        
         if r0[0]['bus'][i,1] == 1:
-            ppc          = case14_mod.case14_mod(busN = i,dlt = dlt_vec[j])
+            ppc          = case14_mod.case14_mod(busN = i,dlt = dlt_vec[j], op_change=1)
             ppopt        = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
             r            = pypo.runpf(ppc, ppopt)
             #plt.plot(r[0]['bus'][:,2])
