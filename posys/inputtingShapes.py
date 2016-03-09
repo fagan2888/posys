@@ -11,28 +11,39 @@ import pypower.api as pypo
 import numpy as np
 
 load_shapes = pd.read_csv('loadShapes1.csv')
-sample      = 10*load_shapes.iloc[0][load_shapes.columns[9:]]
+sample      = 100*load_shapes.iloc[0][load_shapes.columns[9:]]
 
-ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0) # trivial case: original solutin
-ppopt0    = pypo.ppoption(PF_ALG=2,VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
+ppc0      = case14_mod.case14_mod(busN = 1,dlt = 0, op_change=1) # trivial case: original solutin
+ppopt0    = pypo.ppoption(PF_ALG=2,VERBOSE=0, OUT_ALL=0)
 r0        = pypo.runpf(ppc0, ppopt0) 
+n_trs     = sum(r0[0]['bus'][:,1] == 2)
+n_bldgs   = sum(r0[0]['bus'][:,1] == 1)
+transfs   = r0[0]['bus'][:,0][r0[0]['bus'][:,1]==2]
+bdgs      = r0[0]['bus'][:,0][r0[0]['bus'][:,1]==1]
+tm_max    = len(sample)
   # bus 8, power after solution
 
-tmp = 0
-TS  = np.empty((len(r0[0]['bus'][0,:] == 1),len(sample),len(r0[0]['bus'][:][2])))
-for i in range(0,14):
-    for t in range(0,len(sample)):
-        if r0[0]['bus'][i,1] == 1:
-            ini_load = r0[0]['bus'][i][2]
-            for ld in sample:
-                dw        = ld / ini_load - 1    
-                ppc       = case14_mod.case14_mod(busN = i,dlt = dw)
-                ppopt     = pypo.ppoption(PF_ALG=2,VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
-                r         = pypo.runpf(ppc0, ppopt0)
-                new_loads = r[0]['bus'][:,2]
-                tmp      += 1
-                ini_load  = r[0]['bus'][i][2]
-                TS[i,t]   = ini_load
+
+TS  = np.empty((n_bldgs,n_trs,tm_max))
+initial_loads_vec = r0[0]['gen'][:,2][1:]
+cont = 0
+for i in bdgs:
+    tmp = 0
+    for j in transfs:
+        ini_load = initial_loads_vec[tmp]
+        for ld in sample:
+            # NEED TO NORMALIZE CORRECTLY
+            dw           = ini_load/ld - 1  
+            ppc          = case14_mod.case14_mod(busN = i-1, dlt = dw, op_change=2)
+            ppopt        = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) 
+            r            = pypo.runpf(ppc, ppopt)
+            new_loads    = r[0]['gen'][:,2][1:]
+            #ini_load     = r[0]['bus'][i-1][2]
+            TS[cont,tmp] = new_loads[tmp]
+            del(r)
+        tmp += 1
+    cont += 1
+    #print("Hello World")
                 
         
         
