@@ -20,7 +20,7 @@ from numpy import ones
 
 ppc = {}
 
-def case14_mod(busN,dlt):
+def case14_mod(busN,dlt,op_change=1,invec=None):
     """Power flow data for IEEE 14 bus test case.
     Please see L{caseformat} for details on the case file format.
     This data was converted from IEEE Common Data Format
@@ -53,9 +53,12 @@ def case14_mod(busN,dlt):
         [13, 1, 13.5,  5.8, 0, 0,  1, 1.05,  -15.16, 0, 1, 1.06, 0.94],
         [14, 1, 14.9,  5,   0, 0,  1, 1.036, -16.04, 0, 1, 1.06, 0.94]
     ])
-    
-    ppc["bus"][busN,2] *=  1+dlt
 
+    if op_change == 1:
+        ppc["bus"][busN,2] *=  1+dlt
+    elif op_change ==2:
+        ppc["gen"][:,2] = invec
+            
     ## generator data
     # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
     # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
