@@ -9,11 +9,11 @@ import pypower.api as pypo
 from get_ppc14 import *
 
 #def likelihood_ps(bus_vec,measur_vec):      
-def likelihood_ps(bus_vec):
+def likelihood_ps(measur_vec):
 #    ppc     = case14_mod.case14_mod(busN=0,dlt=0,op_change=2,invec=measur_vec)
 
     # -- get ppc
-    ppc = get_ppc14()
+    ppc = get_ppc14(op_change=2,dlt=0,busN=0,invec=bus_vec)
 
     # -- modify the load buses
     np.random.seed(314)
@@ -23,16 +23,17 @@ def likelihood_ps(bus_vec):
 
     ppc["bus"][ind,2] = bvec
 
-
-    ppc     = case14_mod.case14_mod(btype=1,bus_vec)
-
+    # -- estimate the transformer measurements
+    #ppc     = get_ppc14(op_change=2,dlt=0,busN=0,invec=bus_vec)
     ppopt   = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) # Careful: have to use Newton Method!!!
     r       = pypo.runpf(ppc, ppopt)
-    estim   = r[0]['gen'][:,2]  
+    estim   = r[0]['gen'][:,2] 
+    
+    # -- calculate the likelihood
     sig     = np.std(estim - measur_vec)
     return np.exp(((estim - measur_vec)**2).sum()/sig**2)        
         
-ppc0       = case14_mod.case14_mod(busN = 1,dlt = 0, op_change=1) # trivial case: original solutin
+ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
 measur_vec = ppc0['gen'][:,2]
-bus_vec    = measur_vec + np.random.normal(0,1,len(measur_vec))
-L          = likelihood_ps(bus_vec,measur_vec)
+L          = likelihood_ps(measur_vec)
+print L
