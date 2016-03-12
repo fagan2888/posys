@@ -20,7 +20,7 @@ from numpy import ones
 
 ppc = {}
 
-def get_ppc14():
+def get_ppc14(op_change,dlt,busN,invec=[]):
     """Power flow data for IEEE 14 bus test case.
     Please see L{caseformat} for details on the case file format.
     This data was converted from IEEE Common Data Format
@@ -101,5 +101,10 @@ def get_ppc14():
         [2, 0, 0, 3, 0.01,      40, 0],
         [2, 0, 0, 3, 0.01,      40, 0]
     ])
+    
+    if op_change == 1:
+        ppc["bus"][busN,2] *=  1+dlt
+    elif op_change ==2:
+        ppc["gen"][:,2] = invec
 
     return ppc
