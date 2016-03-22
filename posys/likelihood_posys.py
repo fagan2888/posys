@@ -13,11 +13,11 @@ def likelihood_ps(measur_vec):
 #    ppc     = case14_mod.case14_mod(busN=0,dlt=0,op_change=2,invec=measur_vec)
 
     # -- get ppc
-    ppc = get_ppc14(op_change=2,dlt=0,busN=0,invec=bus_vec)
+    ppc = get_ppc14(op_change=1,dlt=0,busN=1)
 
     # -- modify the load buses
     np.random.seed(314)
-    ind  = ppc["bus"][:,1]==1 # 1 is load bus
+    ind   = ppc["bus"][:,1]==1 # 1 is load bus
     bvec  = ppc["bus"][ind,2] + 0.5*np.random.randn(ind.sum())
     bvec *= bvec>0.0
 
@@ -37,3 +37,6 @@ ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
 measur_vec = ppc0['gen'][:,2]
 L          = likelihood_ps(measur_vec)
 print L
+
+
+#for bs in 
