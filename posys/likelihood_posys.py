@@ -7,20 +7,12 @@ Created on Wed Mar  9 09:26:19 2016
 import numpy as np
 import pypower.api as pypo 
 from get_ppc14 import *
+import matplotlib.pyplot as plt
 
 #def likelihood_ps(bus_vec,measur_vec):      
-def likelihood_ps(measur_vec):
-#    ppc     = case14_mod.case14_mod(busN=0,dlt=0,op_change=2,invec=measur_vec)
+def likelihood_ps(measur_vec,bvec):
 
-    # -- get ppc
-    ppc = get_ppc14(op_change=1,dlt=0,busN=1)
-
-    # -- modify the load buses
-    np.random.seed(314)
-    ind   = ppc["bus"][:,1]==1 # 1 is load bus
-    bvec  = ppc["bus"][ind,2] + 0.5*np.random.randn(ind.sum())
-    bvec *= bvec>0.0
-
+    # -- modify load buses
     ppc["bus"][ind,2] = bvec
 
     # -- estimate the transformer measurements
@@ -35,8 +27,28 @@ def likelihood_ps(measur_vec):
         
 ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
 measur_vec = ppc0['gen'][:,2]
-L          = likelihood_ps(measur_vec)
-print L
+ind   = ppc0["bus"][:,1]==1 # 1 is load bus
+np.random.seed(314)
 
+# -- modify the load buses
 
-#for bs in 
+#loads = ppc0['bus'][:,0][ppc0['bus'][:,1]==1]
+tmp = 0
+LK_vec = []
+for bs in loads:
+#    L          = likelihood_ps(measur_vec,bvec)
+    #bvec  = ppc0["bus"][ind,2] + 0.5*np.random.randn(ind.sum())
+    L_vec = []
+    for mod in np.arange(0,1,0.05):
+        bvec  = ppc0["bus"][ind,2]
+        bvec[tmp] =  mod*np.random.randn()
+        bvec *= bvec>0.0
+        L     = likelihood_ps(measur_vec,bvec)
+        L_vec.append(L)
+    plt.plot(L_vec)
+    LK_vec.append(L_vec)
+    tmp += 1
+    
+#    print L
+    
+    
