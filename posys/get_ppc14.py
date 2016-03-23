@@ -18,8 +18,6 @@ This is a temporary script file.
 from numpy import array
 from numpy import ones
 
-ppc = {}
-
 def get_ppc14(op_change,dlt,busN,invec=[]):
     """Power flow data for IEEE 14 bus test case.
     Please see L{caseformat} for details on the case file format.
@@ -30,6 +28,9 @@ def get_ppc14(op_change,dlt,busN,invec=[]):
     08/19/93 UW ARCHIVE           100.0  1962 W IEEE 14 Bus Test Case
     @return: Power flow data for IEEE 14 bus test case.
     """
+
+    # -- initialize
+    ppc = {}
 
     ##-----  Power Flow Data  -----##
     ## system MVA base
