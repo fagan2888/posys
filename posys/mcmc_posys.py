@@ -5,20 +5,43 @@ Urban Observatory
 """
 
 import numpy as np
+import copy as cp
+import pypower.api as pypo 
+from get_ppc14 import *
+import matplotlib.pyplot as plt
+import emcee
+
+ndim, nwalkers = 9, 300
+
+def likelihood_ps(theta,y):
+    # -- modify load buses
+    ppc["bus"][ind,2] = theta
+    # -- estimate the transformer measurements
+    ppopt   = pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0) 
+    r       = pypo.runpf(ppc, ppopt)
+    estim   = r[0]['gen'][:,2] 
+    # -- calculate the likelihood
+    sig     = 10.0
+    return np.exp(-((estim - y)**2).sum()/(2*sig**2))
 
 # Choose the "true" parameters.
-m_true = -0.9594
-b_true = 4.294
-f_true = 0.534
+ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
+ppc = cp.deepcopy(ppc0)
+y = ppc0['gen'][:,2].copy()
+ind   = ppc0["bus"][:,1]==1 
+np.random.seed(314)
+theta  = ppc0["bus"][ind,2].copy()+ 1e-4*np.random.randn(ndim)
+theta *= theta>0.0
 
-# Generate some synthetic data from the model.
-N = 50
-x = np.sort(10*np.random.rand(N))
-yerr = 0.1+0.5*np.random.rand(N)
-y = m_true*x+b_true
-y += np.abs(f_true*y) * np.random.randn(N)
-y += yerr * np.random.randn(N)
+pos = [theta + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
+sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=y)
+
+sampler.run_mcmc(pos, 500)
+
+samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
+
+"""
 
 A = np.vstack((np.ones_like(x), x)).T
 C = np.diag(yerr * yerr)
@@ -70,3 +93,4 @@ samples[:, 2] = np.exp(samples[:, 2])
 m_mcmc, b_mcmc, f_mcmc = map(lambda v: (v[1], v[2]-v[1], v[1]-v[0]),
                              zip(*np.percentile(samples, [16, 50, 84],
                                                 axis=0)))
+"""                                                
