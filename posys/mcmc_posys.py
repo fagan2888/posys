@@ -10,8 +10,9 @@ import pypower.api as pypo
 from get_ppc14 import *
 import matplotlib.pyplot as plt
 import emcee
+import corner
 
-ndim, nwalkers = 9, 300
+ndim, nwalkers = 9, 50
 
 def likelihood_ps(theta,y):
     # -- modify load buses
@@ -22,7 +23,10 @@ def likelihood_ps(theta,y):
     estim   = r[0]['gen'][:,2] 
     # -- calculate the likelihood
     sig     = 10.0
-    return np.exp(-((estim - y)**2).sum()/(2*sig**2))
+    if theta.all() > 0.0:    
+        return np.exp(-((estim - y)**2).sum()/(2*sig**2))
+    else:
+        return 0.0
 
 # Choose the "true" parameters.
 ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
@@ -35,13 +39,29 @@ theta *= theta>0.0
 
 pos = [theta + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
-sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=y)
+sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
 
-sampler.run_mcmc(pos, 500)
+sampler.run_mcmc(pos, 100)
 
-samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
+samples = sampler.chain[:, 10:, :].reshape((-1, ndim))
+
+fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$","$b6$","$b7$","$b8$","$b9$"],
+                      truths=theta)
 
 """
+# Choose the "true" parameters.
+m_true = -0.9594
+b_true = 4.294
+f_true = 0.534
+
+# Generate some synthetic data from the model.
+N = 50
+x = np.sort(10*np.random.rand(N))
+yerr = 0.1+0.5*np.random.rand(N)
+y = m_true*x+b_true
+y += np.abs(f_true*y) * np.random.randn(N)
+y += yerr * np.random.randn(N)
+
 
 A = np.vstack((np.ones_like(x), x)).T
 C = np.diag(yerr * yerr)
