@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import emcee
 import corner
 
-ndim, nwalkers = 9, 50
+ndim, nwalkers = 9, 300
 
 def likelihood_ps(theta,y):
     # -- modify load buses
@@ -34,16 +34,16 @@ ppc = cp.deepcopy(ppc0)
 y = ppc0['gen'][:,2].copy()
 ind   = ppc0["bus"][:,1]==1 
 np.random.seed(314)
-theta  = ppc0["bus"][ind,2].copy()+ 1e-4*np.random.randn(ndim)
+theta  = ppc0["bus"][ind,2].copy()+ 1e-0*np.random.randn(ndim)
 theta *= theta>0.0
 
 pos = [theta + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
 
-sampler.run_mcmc(pos, 100)
+sampler.run_mcmc(pos, 500)
 
-samples = sampler.chain[:, 10:, :].reshape((-1, ndim))
+samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
 
 fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$","$b6$","$b7$","$b8$","$b9$"],
                       truths=theta)
