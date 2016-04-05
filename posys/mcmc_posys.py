@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import emcee
 import corner
 
-ndim, nwalkers = 9, 300
+#ndim, nwalkers = 9, 300
+ndim, nwalkers = 9, 30
 
 def likelihood_ps(theta,y):
     # -- modify load buses
@@ -23,10 +24,10 @@ def likelihood_ps(theta,y):
     estim   = r[0]['gen'][:,2] 
     # -- calculate the likelihood
     sig     = 10.0
-    if theta.all() > 0.0:    
+    if (theta>=0.0).all():
         return np.exp(-((estim - y)**2).sum()/(2*sig**2))
     else:
-        return 0.0
+        return -np.inf
 
 # Choose the "true" parameters.
 ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
@@ -34,19 +35,25 @@ ppc = cp.deepcopy(ppc0)
 y = ppc0['gen'][:,2].copy()
 ind   = ppc0["bus"][:,1]==1 
 np.random.seed(314)
-theta  = ppc0["bus"][ind,2].copy()+ 1e-0*np.random.randn(ndim)
+theta  = ppc0["bus"][ind,2].copy()#+ 1e-0*np.random.randn(ndim)
 theta *= theta>0.0
 
 pos = [theta + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
+print("initializing sampler...")
 sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
 
+print("running walkers...")
+#sampler.run_mcmc(pos, 500)
 sampler.run_mcmc(pos, 500)
+print("walkers finished...")
 
-samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
+#samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
+samples = sampler.chain[:, :, :].reshape((-1, ndim))
 
-fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$","$b6$","$b7$","$b8$","$b9$"],
-                      truths=theta)
+#fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$",
+#                                     "$b6$","$b7$","$b8$","$b9$"],
+#                    truths=theta)
 
 """
 # Choose the "true" parameters.
