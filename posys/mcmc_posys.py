@@ -13,7 +13,7 @@ import corner
 
 #ndim, nwalkers = 9, 300
 ndim, nwalkers = 9, 50
-nsteps = 100
+nsteps = 200
 
 def likelihood_ps(theta,y):
     # -- modify load buses
@@ -34,11 +34,15 @@ ppc0       = get_ppc14(op_change=1,dlt=0,busN=1) #trivial case: original solutin
 ppc = cp.deepcopy(ppc0)
 y = ppc0['gen'][:,2].copy()
 ind   = ppc0["bus"][:,1]==1 
-np.random.seed(314)
-theta  = ppc0["bus"][ind,2].copy()#+ 1e-0*np.random.randn(ndim)
-theta *= theta>0.0
+theta = []
 
 for val in [1.00, 2.00, 5.00, 10.00, 50.00]:
+
+    np.random.seed(314)
+    del(theta)
+    theta  = [val*np.ones(ndim)]#ppc0["bus"][ind,2].copy()#+ 1e-0*np.random.randn(ndim)
+    theta *= theta>0.0
+
     #pos = [theta + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
     pos = [val*np.ones(ndim) for i in range(nwalkers)]    
     
@@ -52,13 +56,14 @@ for val in [1.00, 2.00, 5.00, 10.00, 50.00]:
     
     #samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
     #samples = sampler.chain[:, :, :].reshape((-1, ndim))
-    nm = '%sWalk%s9build%ssteps%sval'%(nwalkers,ndim,nsteps,val)
+    nm = '%sWalk%sbuild%ssteps%sval'%(nwalkers,ndim,nsteps,val)
     np.save(nm, sampler.chain)
     
 
 #fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$",
 #                                     "$b6$","$b7$","$b8$","$b9$"],
 #                    truths=theta)
+
 
 """
 # Choose the "true" parameters.
