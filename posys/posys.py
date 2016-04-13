@@ -44,8 +44,8 @@ def jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load):
     LL[inds] =  Q - BB[inds]*vm**2
     #print ind_load
 
-    return np.vstack((np.hstack((HH[ind_gen + ind_load][:,ind_gen + ind_load],NN[ind_gen + ind_load][ :,ind_load])),
-                      np.hstack((JJ[ind_load][:,ind_gen + ind_load], LL[ind_load][:,ind_load]))))
+    return np.vstack((np.hstack((HH[ind_gen + ind_load][:,ind_gen + ind_load].copy(),NN[ind_gen + ind_load][ :,ind_load].copy())),
+                      np.hstack((JJ[ind_load][:,ind_gen + ind_load].copy(), LL[ind_load][:,ind_load].copy()))))
 
 
 
@@ -64,9 +64,9 @@ def syspower(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,ind_load):
     #print ind_load
 
     # -- calculate the Deltas
-    dpq   = np.r_[pgspec[:NG-1] - P[ind_gen],
-                  plspec[:NL] - P[ind_load],
-                  qlspec[:NL] - Q[ind_load]]
+    dpq   = np.r_[pgspec[:NG-1].copy() - P[ind_gen].copy(),
+                  plspec[:NL].copy() - P[ind_load].copy(),
+                  qlspec[:NL].copy() - Q[ind_load].copy()].copy()
 
     return P, Q, dpq
 
@@ -149,7 +149,7 @@ def ybus(bus,line):
     # -- bus[:,8] - bus susceptance
     # GGD: not sure if this is translated correctly!!!
     if bus[:,7:9].any():
-        Y[np.eye(Y.shape[0])>0] += bus[:,7]+jimag*bus[:,8]
+        Y[np.eye(Y.shape[0])>0.0] += bus[:,7]+jimag*bus[:,8]
 
     # -- separate real and imaginary parts since my power flow
     # -- programs compute the Jacobian and powers using them
@@ -347,6 +347,22 @@ def get_network(systype):
                     [13, 1.050, -15.16, 0.0,   0.000, 0.135,  0.058, 0.0, 0.0, 3],
                     [14, 1.036, -16.04, 0.0,   0.000, 0.149,  0.050, 0.0, 0.0, 3]])
 
+    # - Different factor of ten for the loads.
+#    bus = np.array([[1,  1.060,   0.00, 232.4,-16.9, 0.000,  0.000, 0.0, 0.0, 1],
+#                    [2,  1.045,  -4.98, 40.0,  42.4, 0.217,  0.127, 0.0, 0.0, 2],
+#                    [3,  1.010, -12.72, 0.0,   23.4, 0.942,  0.190, 0.0, 0.0, 2],
+#                    [4,  1.019, -10.33, 0.0,   0.000, 0.478, -0.039, 0.0, 0.0, 3],
+#                    [5,  1.020,  -8.78, 0.0,   0.000, 0.076,  0.016, 0.0, 0.0, 3],
+#                    [6,  1.070, -14.22, 0.0,   12.2, 0.112,  0.075, 0.0, 0.0, 2],
+#                    [7,  1.062, -13.37, 0.0,   0.000, 0.000,  0.000, 0.0, 0.0, 3],
+#                    [8,  1.090, -13.36, 0.0,   17.4, 0.000,  0.000, 0.0, 0.0, 2],
+#                    [9,  1.056, -14.94, 0.0,   0.000, 0.295,  0.166, 0.0, 0.0, 3],
+#                    [10, 1.051, -15.10, 0.0,   0.000, 0.090,  0.058, 0.0, 0.0, 3],
+#                    [11, 1.057, -14.79, 0.0,   0.000, 0.035,  0.018, 0.0, 0.0, 3],
+#                    [12, 1.055, -15.07, 0.0,   0.000, 0.061,  0.016, 0.0, 0.0, 3],
+#                    [13, 1.050, -15.16, 0.0,   0.000, 0.135,  0.058, 0.0, 0.0, 3],
+#                    [14, 1.036, -16.04, 0.0,   0.000, 0.149,  0.050, 0.0, 0.0, 3]])
+
     return bus,line
 
 
@@ -418,7 +434,7 @@ GG, BB, N, NG, NL, vm, an, e, f, pgspec, plspec, qlspec, ind_gen, ind_load = \
 # -- set tolerance params
 min_tol  = 0.005
 itr      = 0
-iter_max = 1  
+iter_max = 5
 error    = 1 # Is this correct?! In pypower they calculate this at the input.
 delta_magnitude = [0]*(iter_max+1)
 dpq_magnitude   = [0]*(iter_max+1)
@@ -428,7 +444,9 @@ while (itr <= iter_max and error > min_tol):
     # Compute powers and power mismatches
     P, Q, dpq = syspower(GG,BB,N,NG,NL,e,f,pgspec,plspec,qlspec,ind_gen,
                          ind_load)
-    print np.max(dpq)
+                         
+    #print dpq                         
+    #print np.linalg.norm(dpq,2)
     jac       = jaco(GG,BB,P,Q,N,NG,NL,vm,e,f,ind_gen,ind_load)
 
     # Solve system of equations
@@ -443,7 +461,7 @@ while (itr <= iter_max and error > min_tol):
 
     # Update values of voltages and angles
     vm[ind_load] *= 1 + dtv[NG+NL-1:2*NL+NG-1] # load bus
-    an[1:N]      +=     dtv[0:NL+NG-1]*180/np.pi # loads and generators
+    an[1:N]      +=     dtv[0:NL+NG-1]*180./np.pi # loads and generators
 #    vm[ind_load]  = np.abs(vm[ind_load])
 #    an[1:N]       = an[1:N] % 360.
 
@@ -454,19 +472,19 @@ while (itr <= iter_max and error > min_tol):
     # Refresh
     itr += 1
 #
-    print("\niteration: {0}".format(itr))
-    print("  power : {0}".format(P))
-    print("  reac  : {0}".format(Q))
-    print("  dpq   : {0}".format(dpq))
-    if systype=='3bus':
-        print("  jac   : {0}".format(jac[0]))
-        print("        : {0}".format(jac[1]))
-        print("        : {0}".format(jac[2]))
-    print("  dtv   : {0}".format(dtv))
-    print("  vm    : {0}".format(vm))
-    print("  an    : {0}".format(an))
-    print("  ConNumb    : {0}".format(np.linalg.cond(jac)))
-    print("  det   : {0}".format(np.linalg.det(jac)))
+#    print("\niteration: {0}".format(itr))
+#    print("  power : {0}".format(P))
+#    print("  reac  : {0}".format(Q))
+#    print("  dpq   : {0}".format(dpq))
+#    if systype=='3bus':
+#        print("  jac   : {0}".format(jac[0]))
+#        print("        : {0}".format(jac[1]))
+#        print("        : {0}".format(jac[2]))
+#    print("  dtv   : {0}".format(dtv))
+#    print("  vm    : {0}".format(vm))
+#    print("  an    : {0}".format(an))
+#    print("  ConNumb    : {0}".format(np.linalg.cond(jac)))
+#    print("  det   : {0}".format(np.linalg.det(jac)))
 #    
     
     
