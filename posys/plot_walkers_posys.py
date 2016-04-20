@@ -9,6 +9,19 @@ import matplotlib.pyplot as plt
 import corner
 import numpy as np
 
+median_20_init0,median_20_init1,median_20_init2,median_20_init3,median_20_init4,mediacn_50_init0,median_50_init1,median_50_init2,median_50_init3,median_50_init4 = np.load('random/median_300Walk9build500steps20.0valRandomInit0.npy'),np.load('random/median_300Walk9build500steps20.0valRandomInit1.npy'),np.load('random/median_300Walk9build500steps20.0valRandomInit2.npy'),np.load('random/median_300Walk9build500steps20.0valRandomInit3.npy'),np.load('random/median_300Walk9build500steps20.0valRandomInit4.npy'),np.load('random/median_300Walk9build500steps50.0valRandomInit0.npy'), np.load('random/median_300Walk9build500steps50.0valRandomInit1.npy'), np.load('random/median_300Walk9build500steps50.0valRandomInit2.npy'),np.load('random/median_300Walk9build500steps50.0valRandomInit3.npy'),np.load('random/median_300Walk9build500steps50.0valRandomInit4.npy')
+
+m_inits = np.median(np.median([median_20_init0,median_20_init1,median_20_init2,median_20_init3,median_20_init4,mediacn_50_init0,median_50_init1,median_50_init2,median_50_init3,median_50_init4],1),1)
+m_bdgs = np.median(np.median([median_20_init0,median_20_init1,median_20_init2,median_20_init3,median_20_init4,mediacn_50_init0,median_50_init1,median_50_init2,median_50_init3,median_50_init4],1),0)
+
+
+fl_20_init0,fl_20_init1,fl_20_init2,fl_20_init3,fl_20_init4,fl_50_init0,fl_50_init1,fl_50_init2,fl_50_init3,fl_50_init4 = np.load('random/300Walk9build500steps20.0valRandomInit0.npy'),np.load('random/300Walk9build500steps20.0valRandomInit1.npy'),np.load('random/300Walk9build500steps20.0valRandomInit2.npy'),np.load('random/300Walk9build500steps20.0valRandomInit3.npy'),np.load('random/300Walk9build500steps20.0valRandomInit4.npy'),np.load('random/300Walk9build500steps50.0valRandomInit0.npy'), np.load('random/300Walk9build500steps50.0valRandomInit1.npy'), np.load('random/300Walk9build500steps50.0valRandomInit2.npy'),np.load('random/300Walk9build500steps50.0valRandomInit3.npy'),np.load('random/300Walk9build500steps50.0valRandomInit4.npy')
+
+# -- Plotting example
+
+plt.plot((fl_50_init1[:,:,2]).T)
+
+"""
 ndim, nwalkers = 9, 300
 nsteps = 500
 v = [1,2,3,4,5]
@@ -31,3 +44,4 @@ for va in varlist:
 fig = corner.corner(samples, labels=["$b1$", "$b2$", "$b3$","$b4$","$b5$",
                                      "$b6$","$b7$","$b8$","$b9$"],
                     truths=theta)
+"""
