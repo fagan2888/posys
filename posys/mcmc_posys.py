@@ -34,7 +34,7 @@ def likelihood_ps(theta,y):
 # -- utilities
 ndim     = 9
 nwalkers = 30
-nsteps   = 100
+nsteps   = 200
 cut      = 50
 
 
@@ -49,7 +49,7 @@ binit = ppc0["bus"][ind,2].copy()
 print("initializing sampler...")
 np.random.seed(314)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
-pos     = [binit + 10.0*np.random.randn(ndim) for i in range(nwalkers)]
+pos     = [binit + 20.0*np.random.randn(ndim) for i in range(nwalkers)]
 pos    *= np.transpose(np.transpose(pos) >0.00)
 
 
