@@ -13,7 +13,7 @@ import corner
 
 # Refer to https://github.com/rwl/PYPOWER/blob/master/pypower/newtonpf.py
 
-def likelihood_ps(theta,y):
+def lnlike(theta,y):
     
     # -- modify load buses
     ppc["bus"][ind,2] = theta
@@ -34,7 +34,7 @@ def likelihood_ps(theta,y):
 # -- utilities
 ndim     = 9
 nwalkers = 30
-nsteps   = 200
+nsteps   = 100
 cut      = 50
 
 
@@ -45,12 +45,13 @@ y     = ppc0['gen'][:,2].copy() # default measured values of transformers
 ind   = ppc0["bus"][:,1]==1 # building indices
 binit = ppc0["bus"][ind,2].copy()
 
+
 # -- Initialize sampler
 print("initializing sampler...")
 np.random.seed(314)
-sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
-pos     = [binit + 20.0*np.random.randn(ndim) for i in range(nwalkers)]
-pos    *= np.transpose(np.transpose(pos) >0.00)
+sampler = emcee.EnsembleSampler(nwalkers, ndim, lnlike, args=[y])
+pos     = np.array([binit*(1.0+0.2*np.random.randn(ndim)) for i in 
+                    range(nwalkers)]).clip(min=0.0)
 
 
 # -- run walkers
