@@ -26,7 +26,7 @@ def likelihood_ps(theta,y):
     # -- calculate the likelihood
     sig     = 1.0
     if (theta>=0.0).all():
-        return np.exp(-((estim - y)**2).sum()/(2*sig**2))
+        return -((estim - y)**2).sum()/(2*sig**2)
     else:
         return -np.inf
 
@@ -50,6 +50,7 @@ print("initializing sampler...")
 np.random.seed(314)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, likelihood_ps, args=[y])
 pos     = [binit + 10.0*np.random.randn(ndim) for i in range(nwalkers)]
+pos    *= np.transpose(np.transpose(pos) >0.00)
 
 
 # -- run walkers
