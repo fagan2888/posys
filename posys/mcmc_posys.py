@@ -46,6 +46,9 @@ for val in [1.00, 2.00, 5.00, 10.00, 20.00]:
 	print("initializing sampler...")
 	np.random.seed(314)
 	y = val*np.ones(len(y))
+	sol   = pypo.runpf(ppc, pypo.ppoption(PF_ALG=2, VERBOSE=0, OUT_ALL=0))
+	estim = sol[0]['bus'][ind,2]
+
 	binit = val*np.ones(ndim) 
 	sampler = emcee.EnsembleSampler(nwalkers, ndim, lnlike, args=[y])
 	pos     = np.array([binit*(1.0+0.2*np.random.randn(ndim)) for i in range(nwalkers)]).clip(min=0.0)
