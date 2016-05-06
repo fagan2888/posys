@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Urban Observatory
-"""
+
+# Urban Observatory
 
 import numpy as np
 import copy as cp
@@ -32,7 +31,7 @@ def lnlike(theta,y):
 # -- utilities
 ndim     = 9
 nwalkers = 30
-nsteps   = 100
+nsteps   = 200
 cut      = 5
 
 # -- intialize the 14-bus system
@@ -43,21 +42,19 @@ ind   = ppc0["bus"][:,1]==1 # building indices
 binit = ppc0["bus"][ind,2].copy()
 
 for val in [1.00, 2.00, 5.00, 10.00, 20.00]:
-    # -- Initialize sampler
-    print("initializing sampler...")
-    np.random.seed(314)
-    y = val*np.ones(len(y))
-    binit = val*np.ones(ndim) 
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnlike, args=[y])
-    pos     = np.array([binit*(1.0+0.2*np.random.randn(ndim)) for i in 
-                        range(nwalkers)]).clip(min=0.0)
-        
-    # -- run walkers
-    print("running walkers...")
-    sampler.run_mcmc(pos, nsteps)
-    print("walkers finished...")
-    
-    # -- save chain
-    oname = "../output/random_test20percent"+str(val)+".npy"
-    print("saving chain to {0}".format(oname))
-    np.save(oname,sampler.chain)
+	# -- Initialize sampler
+	print("initializing sampler...")
+	np.random.seed(314)
+	y = val*np.ones(len(y))
+	binit = val*np.ones(ndim) 
+	sampler = emcee.EnsembleSampler(nwalkers, ndim, lnlike, args=[y])
+	pos     = np.array([binit*(1.0+0.2*np.random.randn(ndim)) for i in range(nwalkers)]).clip(min=0.0)
+	# -- run walkers
+	print("running walkers...")
+	sampler.run_mcmc(pos, nsteps)
+	print("walkers finished...")
+
+	# -- save chain
+	oname = "../output/random_test20percent"+str(val)+".npy"
+	print("saving chain to {0}".format(oname))
+	np.save(oname,sampler.chain)
