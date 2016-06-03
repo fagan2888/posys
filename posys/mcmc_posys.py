@@ -30,9 +30,9 @@ def lnlike(theta,y):
 
 # -- utilities
 ndim     = 9
-nwalkers = 30
-nsteps   = 80
-cut      = 5
+nwalkers = 300
+nsteps   = 100
+cut      = 50
 
 # -- intialize the 14-bus system
 ppc0  = get_ppc14(1,0,1) # 0 implies no change
